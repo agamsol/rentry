@@ -177,7 +177,7 @@ if "!temp.mode!"=="RAW" (
         exit /b
     )
 
-    if defined temp.file set "output_to_file=-o "!temp.file!""
+    if defined temp.file set "output_to_file=--create-dirs -o "!temp.file!""
     "!temp.curl!" -k --silent "https://rentry.co/!temp.url!/raw" !output_to_file!
 )
 exit /b
