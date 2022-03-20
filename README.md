@@ -8,7 +8,7 @@
 > Same purpose - based on different language.
 
 #### DEPENDENCIES
-> These depencies apply to rentry.cmd version 1.0.0.0
+> These depencies apply to rentry.cmd version 1.0.0.1
 - Powershell 3.0 ([according to microsoft docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertfrom-json?view=powershell-7.2#:~:text=See%20other%20examples%20below.,cmdlet%20supports%20JSON%20with%20comments.))
 - cURL Must be added to path.
 
@@ -16,7 +16,7 @@
 - [rentry.co](https://rentry.co/) must be online to use this script.
 
 ### 📫 Download the API
-- Download the [API's Source code](LINK) and save it in a folder
+- Download the [API's Source code](https://github.com/agamsol/rentry/blob/main/rentry.cmd) and save it in a folder
 - Copy the path to the folder
 - open a cmd window
 - type `cd /d "<paste_path_here>"`
@@ -24,11 +24,12 @@
 
 ### ❓ USING THE API
 #### Primary commands
-- `--help`    View the help page - Also default page in a case non of the primary commands were specified
-- `--new`     Create new entry
-- `--edit`    Edit existing entry
-- `--delete`  Delete existing entry
--  `--raw`    Display a paste as RAW
+- `--help`     View the help page - Default page in a case non of the primary commands were specified
+- `--new`      Create new entry
+- `--edit`     Edit existing entry
+- `--delete`   Delete existing entry
+- `--raw`      Display a paste as RAW
+- `--if-exist` Check if entry exists at all
 
 #### Options (Sub Commands)
 _NOTE: The order of specified options does not matter and all options are recorded._
@@ -43,12 +44,12 @@ In each case of use at least 1 primary command should be specified.
 the primary commands are the ones in the first row of the chart
 the first column shows the sub commands that each primary command needs.
 
-USAGE | `--help` | `--new` | `--edit` | `--delete` | ``--raw`` |
-:----: | :------: | :---: |:----: | :------: | :---: |
-`--url`   | <span style="color:green">not needed</span> | <span style="color:orange">optional</span> | <span style="color:red">required</span> | <span style="color:red">required</span> | <span style="color:red">required</span> |
-`--edit-code` | <span style="color:green">not needed</span>  | <span style="color:orange">optional</span> | <span style="color:red">required</span> | <span style="color:red">required</span> | <span style="color:green">not needed</span> |
-`--file`   | <span style="color:green">not needed</span>  | <span style="color:red">required</span> | <span style="color:red">required</span> | <span style="color:green">not needed</span> | <span style="color:orange">optional</span> |
-`--curl`   | <span style="color:green">not needed</span>  | <span style="color:orange">optional</span> | <span style="color:orange">optional</span> | <span style="color:orange">optional</span> | <span style="color:orange">optional</span> |
+USAGE | `--help` | `--new` | `--edit` | `--delete` | ``--raw`` | `--if-exist` |
+:----: | :------: | :---: |:----: | :------: | :---: | :--: |
+`--url`   | <span style="color:green">not needed</span> | <span style="color:orange">optional</span> | <span style="color:red">required</span> | <span style="color:red">required</span> | <span style="color:red">required</span> | <span style="color:red">required</span> |
+`--edit-code` | <span style="color:green">not needed</span>  | <span style="color:orange">optional</span> | <span style="color:red">required</span> | <span style="color:red">required</span> | <span style="color:green">not needed</span> | <span style="color:green">not needed</span> |
+`--file`   | <span style="color:green">not needed</span>  | <span style="color:red">required</span> | <span style="color:red">required</span> | <span style="color:green">not needed</span> | <span style="color:orange">optional</span> | <span style="color:green">not needed</span> |
+`--curl`   | <span style="color:green">not needed</span>  | <span style="color:orange">optional</span> | <span style="color:orange">optional</span> | <span style="color:orange">optional</span> | <span style="color:orange">optional</span> | <span style="color:orange">optional</span> |
 
 Example for reading the chart:
 - To use the `--edit` function you must specify a `--url`, `--edit-code` and `--file`
@@ -71,6 +72,20 @@ Example for reading the chart:
 
 - `call rentry.cmd --raw --url myurl --file "file.txt"`
     - Save the entry's content to a file.
+
+- `call rentry.cmd --if-exist --url myurl`
+    - Check if entry exists using its URL
+
+##### Example to specify curl installation file
+- `call rentry.cmd --raw --url myurl --curl "C:\Users\Agam\Desktop\files\curl.exe"`
+    - use specified curl version to perform the raw command
+
+#### 📝 Change Log
+> What has changed at version 1.0.0.1
+- Added new flag `--if-exist` - this helps to check if entry exists at all by returning an `Ok`
+- Fixed forgotten line where printed debugging issues
+- Fixed Code-Page issues
+- Fixed custom cURL spaces path
 
 #### Contact information and support 📚
 > Feel free to contact me in discord, <span style="color:#7289DA">Agam#0001</span>
