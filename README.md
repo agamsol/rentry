@@ -8,7 +8,7 @@
 > Same purpose - based on different language.
 
 #### DEPENDENCIES
-> These depencies apply to rentry.cmd version 1.0.0.1
+> These depencies apply to rentry.cmd version 1.0.0.2
 - Powershell 3.0 ([according to microsoft docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertfrom-json?view=powershell-7.2#:~:text=See%20other%20examples%20below.,cmdlet%20supports%20JSON%20with%20comments.))
 - cURL Must be added to path.
 
@@ -86,6 +86,9 @@ Example for reading the chart:
 - Fixed forgotten line where printed debugging issues
 - Fixed Code-Page issues
 - Fixed custom cURL spaces path
+
+> What has changed at version 1.0.0.2 (This Version)
+- Added errorlevels for all exit cases (0 = success | 1 = error)
 
 #### Contact information and support 📚
 > Feel free to contact me in discord, <span style="color:#7289DA">Agam#0001</span>

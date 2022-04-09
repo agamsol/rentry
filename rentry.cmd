@@ -6,7 +6,7 @@ REM  rentry.bat - Batch replica to the python version
 REM  Made by github.com/agamsol/rentry
 REM -----------------------------
 
-set API=1.0.1
+set API=1.0.0.2
 
 set Args.Length=0
 for %%a in (%*) do (
@@ -19,8 +19,6 @@ for /L %%a in (1 1 !Args.length!) do (
         if /i "!Arg[%%a]!"=="--%%~b" (
             set Arg.Next=%%a
             set /a Arg.Next+=1
-            REM ----- GENERAL -----
-            REM --url <url>
             if /i "%%~b"=="url" (
                 for /f "delims=" %%c in ("!Arg.Next!") do (
                     set temp.url=!Arg[%%c]!
@@ -30,22 +28,18 @@ for /L %%a in (1 1 !Args.length!) do (
                     )
                 )
             )
-            REM --edit-code <edit_code>
             if /i "%%~b"=="edit-code" (
                 for /f "delims=" %%c in ("!Arg.Next!") do (
                     set temp.edit-code=!Arg[%%c]!
                 )
             )
-            REM --file <file>
             if /i "%%~b"=="file" (
                 for /f "delims=" %%c in ("!Arg.Next!") do (
                     set temp.file=!Arg[%%c]!
                 )
             )
-            REM --curl <curl>
             if /i "%%~b"=="curl" (
                 for /f "delims=" %%c in ("!Arg.Next!") do (
-                    REM MAKE THIS CURL FUNCTION AND THEN FINISH AND RELEASE!
                     if exist "!Arg[%%c]!" set temp.curl=!Arg[%%c]!
                 )
             )
@@ -85,7 +79,7 @@ if "!temp.mode!"=="HELP" (
         "        If you would like to use the official python version please visit"
         "            https://github.com/radude/rentry"
     ) do echo:%%~a
-    exit /b
+    exit /b 0
 )
 
 if not defined temp.curl (
@@ -93,28 +87,33 @@ if not defined temp.curl (
     if !errorlevel! equ 1 (
         echo ERROR: cURL not installed, you can specify custom cURL build using the "--curl" flag
         echo       You can download curl at https://curl.se/windows/
-        exit /b
+        exit /b 1
     ) else (
         set temp.curl=curl.exe
     )
 )
 
 if "!temp.mode!"=="IF-EXIST" (
-    if not defined temp.url echo ERROR: You must specify URL to view the paste. & exit /b
-    "!temp.curl!" --silent -kf "https://rentry.co/!temp.url!/raw">nul 2>&1 && echo Ok || echo ERROR: Invalid Entry
-    exit /b
+    if not defined temp.url echo ERROR: You must specify URL to view the paste. & exit /b 1
+    "!temp.curl!" --silent -kf "https://rentry.co/!temp.url!/raw">nul 2>&1 && (
+        echo Ok
+        exit /b 0
+    ) || (
+        echo ERROR: Invalid Entry
+        exit /b 1
+    )
 )
 
-if !temp.url.length! equ 1 echo ERROR: URL's length must be greater than or equal to 2 characters. & exit /b
+if !temp.url.length! equ 1 echo ERROR: URL's length must be greater than or equal to 2 characters. & exit /b 1
 
 if "!temp.mode!"=="NEW" (
     call :GENERATE_CERTICICATE
     if defined temp.file (
         if not exist "!temp.file!" (
             echo ERROR: File does not exist
-            exit /b
+            exit /b 1
         )
-    ) else echo ERROR: File not specified. & exit /b
+    ) else echo ERROR: File not specified. & exit /b 1
     "!temp.curl!" -k --silent -X POST --referer "https://rentry.co" --data-urlencode "csrfmiddlewaretoken=!token!" --data-urlencode "edit_code=!temp.edit-code!" --data-urlencode "url=!temp.url!" --data-urlencode "text@!temp.file!" !cookie! -o "!temp!\response.json" https://rentry.co/api/new/
     call :JsonParse "!temp!\response.json" content errors url edit_code
     if "!resp.content!"=="OK" (
@@ -122,28 +121,28 @@ if "!temp.mode!"=="NEW" (
         echo EDIT_CODE: !resp.edit_code!
     ) else (
         call :CHECK_ERRORS
-        exit /b
+        exit /b 1
     )
 )
 
 "!temp.curl!" --silent -kf "https://rentry.co/!temp.url!/raw">nul 2>&1 || (
     echo ERROR: The URL specified does not exist.
-    exit /b
+    exit /b 1
 )
 
 if "!temp.mode!"=="EDIT" (
     :EDIT_PASTE [ #DELETE ]
     if "%~1"=="#DELETE" (set temp.mode.int=delete) else set temp.mode.int=edit
-    if not defined temp.url echo ERROR: You must specify URL and edit-code to !temp.mode.int!. & exit /b 101
-    if not defined temp.EDIT-CODE echo ERROR: You must specify the edit-code to !temp.mode.int! this paste. & exit /b 101
+    if not defined temp.url echo ERROR: You must specify URL and edit-code to !temp.mode.int!. & exit /b 1
+    if not defined temp.EDIT-CODE echo ERROR: You must specify the edit-code to !temp.mode.int! this paste. & exit /b 1
 
     if not "%1"=="#DELETE" (
         if defined temp.file (
             if not exist "!temp.file!" (
                 echo ERROR: File does not exist
-                exit /b
+                exit /b 1
             )
-        ) else echo ERROR: File not specified. & exit /b
+        ) else echo ERROR: File not specified. & exit /b 1
     )
 
     call :GENERATE_CERTICICATE
@@ -152,35 +151,35 @@ if "!temp.mode!"=="EDIT" (
     if not !resp.status! equ 200 (
         call :CHECK_ERRORS
         if "%1"=="#DELETE" exit /b 101
-        exit /b
+        exit /b 1
     ) else if "!resp.content!"=="OK" (
         if "%1"=="#DELETE" exit /b 100
         echo Successfully edited the paste '!temp.url!'
-        exit /b 100
+        exit /b 1
     )
 )
 
 if "!temp.mode!"=="DELETE" (
     call :EDIT_PASTE #DELETE
-    if !errorlevel! equ 101 exit /b
+    if !errorlevel! equ 101 exit /b 1
     call :GENERATE_CERTICICATE
     "!temp.curl!" -k --silent --referer "https://rentry.co/api/edit" --cookie "csrftoken=!token!" --data "csrfmiddlewaretoken=!token!" --data "delete=delete" --data "edit_code=!temp.edit-code!" "https://rentry.co/!temp.url!/edit"
     echo Successfully deleted the paste.
 )
 
 if "!temp.mode!"=="RAW" (
-    if not defined temp.url echo ERROR: You must specify URL to view the paste. & exit /b
+    if not defined temp.url echo ERROR: You must specify URL to view the paste. & exit /b 1
     "!temp.curl!" -k --silent https://rentry.co/api/raw/!temp.url! -o "!temp!/rentry-raw.json"
     call :JsonParse "!temp!/rentry-raw.json" status content
     if !resp.status! equ 404 (
         call :CHECK_ERRORS
-        exit /b
+        exit /b 1
     )
 
     if defined temp.file set "output_to_file=--create-dirs -o "!temp.file!""
     "!temp.curl!" -k --silent "https://rentry.co/!temp.url!/raw" !output_to_file!
 )
-exit /b
+exit /b 0
 
 :CHECK_ERRORS
 if "!resp.errors!"=="Entry with this url already exists." echo ERROR: URL specified is already taken.
