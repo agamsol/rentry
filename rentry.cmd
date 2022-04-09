@@ -155,7 +155,7 @@ if "!temp.mode!"=="EDIT" (
     ) else if "!resp.content!"=="OK" (
         if "%1"=="#DELETE" exit /b 100
         echo Successfully edited the paste '!temp.url!'
-        exit /b 1
+        exit /b 0
     )
 )
 
