@@ -6,7 +6,7 @@ REM  rentry.bat - Batch replica to the python version
 REM  Made by github.com/agamsol/rentry
 REM -----------------------------
 
-set API=1.0.0.2
+set API=1.0.0.3
 
 set Args.Length=0
 for %%a in (%*) do (
@@ -204,7 +204,7 @@ for /f "tokens=1-2 delims=:; " %%a in ('"!temp.curl!" -k --silent --head https:/
 exit /b
 
 :: ADDON \ PARSE JSON KEYS FROM FILE
-:JsonParse <Json file> <Json keys to parse>
+:JsonParse
 chcp 437>nul
 for %%a in ("ParseSource" "JsonKeys" "ParseKeys") do set %%~a=
 set "ParseSource=%~1"
