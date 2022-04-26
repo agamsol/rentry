@@ -1,19 +1,19 @@
 ### 🧾 RENTRY API - Batch Version
-> [rentry.co](https://rentry.co/) is markdown-powered pastebin/publishing service with preview, custom urls and editing.
+> [rentry.org](https://rentry.org/) is markdown-powered pastebin/publishing service with preview, custom urls and editing.
 >
 > This repository contains a simple script that allows pasting and editing from command line interface.
 
 ##### ⚠️ PLEASE NOTE:
-**The script in this repository was not made by the official authors of [rentry.co](https://rentry.co/) and it is a replica for the repository of [radude/rentry](https://github.com/radude/rentry). what makes it different is the language used in the 2 repositories.**
+**The script in this repository was not made by the official authors of [rentry.org](https://rentry.org/) and it is a replica for the repository of [radude/rentry](https://github.com/radude/rentry). what makes it different is the language used in the 2 repositories.**
 > Same purpose - based on different language.
 
 #### DEPENDENCIES
-> These depencies apply to rentry.cmd version 1.0.0.3
+> These depencies apply to rentry.cmd version 1.0.0.4
 - Powershell 3.0 ([according to microsoft docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertfrom-json?view=powershell-7.2#:~:text=See%20other%20examples%20below.,cmdlet%20supports%20JSON%20with%20comments.))
 - cURL Must be added to path.
 
     assuming that curl is pre-installed in windows **since Windows 10, version 1803 or later** you should be ok (else you'd want to specify a curl installation using the `--curl` flag)
-- [rentry.co](https://rentry.co/) must be online to use this script.
+- [rentry.org](https://rentry.org/) must be online to use this script.
 
 ### 📫 Download the API
 - Download the [API's Source code](https://github.com/agamsol/rentry/blob/main/rentry.cmd) and save it in a folder
@@ -81,17 +81,28 @@ Example for reading the chart:
     - use specified curl version to perform the raw command
 
 #### 📝 Change Log
-> What has changed at version 1.0.0.1
+
+#### What has changed at version 1.0.0.4 (This Version)
+- Support new domain of rentry (rentry.org)
+- Reduced code using a BaseURL variable
+- New Entry Creation Format: [ URL={URL} ] [ EDIT_CODE={EDIT_CODE} ]
+
+<details>
+    <summary>🔎 View older versions</summary>
+
+#### What has changed at version 1.0.0.3
+- Removed part of label in line which could cause problems in some cases
+
+#### What has changed at version 1.0.0.2
+- Added errorlevels for all exit cases (0 = success | 1 = error)
+
+#### What has changed at version 1.0.0.1
 - Added new flag `--if-exist` - this helps to check if entry exists at all by returning an `Ok`
 - Fixed forgotten line where printed debugging issues
 - Fixed Code-Page issues
 - Fixed custom cURL spaces path
 
-> What has changed at version 1.0.0.2
-- Added errorlevels for all exit cases (0 = success | 1 = error)
-
-> What has changed at version 1.0.0.3 (This Version)
-- Removed part of label in line which could cause problems in some cases
+</details>
 
 #### Contact information and support 📚
 > Feel free to contact me in discord, <span style="color:#7289DA">Agam#0001</span>

@@ -5,8 +5,14 @@ REM -----------------------------
 REM  rentry.bat - Batch replica to the python version
 REM  Made by github.com/agamsol/rentry
 REM -----------------------------
+REM          CHANGE LOG
+REM        Version 1.0.0.4
+REM   - Support new domain of rentry (rentry.org)
+REM   - Reduced code using a BaseURL variable
+REM   - New Entry Creation Format: [ URL={URL} ] [ EDIT_CODE={EDIT_CODE} ]
 
-set API=1.0.0.3
+set API=1.0.0.4
+set "BaseURL=https://rentry.org"
 
 set Args.Length=0
 for %%a in (%*) do (
@@ -75,7 +81,7 @@ if "!temp.mode!"=="HELP" (
         " call %~nx0 --raw --url myurl                                        # Display the paste's text in the terminal"
         " call %~nx0 --raw --url myurl --file "file.txt"                      # Save the entry's content to a file."
         ""
-        " NOTE: This utility is not made by the official author of rentry.co"
+        " NOTE: This utility is not made by the official author of rentry.org"
         "        If you would like to use the official python version please visit"
         "            https://github.com/radude/rentry"
     ) do echo:%%~a
@@ -95,7 +101,7 @@ if not defined temp.curl (
 
 if "!temp.mode!"=="IF-EXIST" (
     if not defined temp.url echo ERROR: You must specify URL to view the paste. & exit /b 1
-    "!temp.curl!" --silent -kf "https://rentry.co/!temp.url!/raw">nul 2>&1 && (
+    "!temp.curl!" --silent -kf "!BaseURL!/!temp.url!/raw">nul 2>&1 && (
         echo Ok
         exit /b 0
     ) || (
@@ -114,18 +120,18 @@ if "!temp.mode!"=="NEW" (
             exit /b 1
         )
     ) else echo ERROR: File not specified. & exit /b 1
-    "!temp.curl!" -k --silent -X POST --referer "https://rentry.co" --data-urlencode "csrfmiddlewaretoken=!token!" --data-urlencode "edit_code=!temp.edit-code!" --data-urlencode "url=!temp.url!" --data-urlencode "text@!temp.file!" !cookie! -o "!temp!\response.json" https://rentry.co/api/new/
+    "!temp.curl!" -k --silent -X POST --referer "!BaseURL!" --data-urlencode "csrfmiddlewaretoken=!token!" --data-urlencode "edit_code=!temp.edit-code!" --data-urlencode "url=!temp.url!" --data-urlencode "text@!temp.file!" !cookie! -o "!temp!\response.json" !BaseURL!/api/new/
     call :JsonParse "!temp!\response.json" content errors url edit_code
     if "!resp.content!"=="OK" (
-        echo URL: !resp.url!
-        echo EDIT_CODE: !resp.edit_code!
+        echo URL=!resp.url:rentry.co=rentry.org!
+        echo EDIT_CODE=!resp.edit_code!
     ) else (
         call :CHECK_ERRORS
         exit /b 1
     )
 )
 
-"!temp.curl!" --silent -kf "https://rentry.co/!temp.url!/raw">nul 2>&1 || (
+"!temp.curl!" --silent -kf "!BaseURL!/!temp.url!/raw">nul 2>&1 || (
     echo ERROR: The URL specified does not exist.
     exit /b 1
 )
@@ -146,7 +152,7 @@ if "!temp.mode!"=="EDIT" (
     )
 
     call :GENERATE_CERTICICATE
-    "!temp.curl!" -k --silent -X POST --referer "https://rentry.co"  --data-urlencode "csrfmiddlewaretoken=!token!" --data-urlencode "edit_code=!temp.edit-code!" --data-urlencode "text@!temp.file!" !cookie! -o "!temp!\response.json" "https://rentry.co/api/edit/!temp.url!"
+    "!temp.curl!" -k --silent -X POST --referer "!BaseURL!"  --data-urlencode "csrfmiddlewaretoken=!token!" --data-urlencode "edit_code=!temp.edit-code!" --data-urlencode "text@!temp.file!" !cookie! -o "!temp!\response.json" "!BaseURL!/api/edit/!temp.url!"
     call :JsonParse "!temp!\response.json" content errors status content
     if not !resp.status! equ 200 (
         call :CHECK_ERRORS
@@ -163,13 +169,13 @@ if "!temp.mode!"=="DELETE" (
     call :EDIT_PASTE #DELETE
     if !errorlevel! equ 101 exit /b 1
     call :GENERATE_CERTICICATE
-    "!temp.curl!" -k --silent --referer "https://rentry.co/api/edit" --cookie "csrftoken=!token!" --data "csrfmiddlewaretoken=!token!" --data "delete=delete" --data "edit_code=!temp.edit-code!" "https://rentry.co/!temp.url!/edit"
+    "!temp.curl!" -k --silent --referer "!BaseURL!/api/edit" --cookie "csrftoken=!token!" --data "csrfmiddlewaretoken=!token!" --data "delete=delete" --data "edit_code=!temp.edit-code!" "!BaseURL!/!temp.url!/edit"
     echo Successfully deleted the paste.
 )
 
 if "!temp.mode!"=="RAW" (
     if not defined temp.url echo ERROR: You must specify URL to view the paste. & exit /b 1
-    "!temp.curl!" -k --silent https://rentry.co/api/raw/!temp.url! -o "!temp!/rentry-raw.json"
+    "!temp.curl!" -k --silent !BaseURL!/api/raw/!temp.url! -o "!temp!/rentry-raw.json"
     call :JsonParse "!temp!/rentry-raw.json" status content
     if !resp.status! equ 404 (
         call :CHECK_ERRORS
@@ -177,7 +183,7 @@ if "!temp.mode!"=="RAW" (
     )
 
     if defined temp.file set "output_to_file=--create-dirs -o "!temp.file!""
-    "!temp.curl!" -k --silent "https://rentry.co/!temp.url!/raw" !output_to_file!
+    "!temp.curl!" -k --silent "!BaseURL!/!temp.url!/raw" !output_to_file!
 )
 exit /b 0
 
@@ -193,7 +199,7 @@ exit /b
 :: ADDON / GENERATE CERTIFICATE TO USE RENTRY
 :GENERATE_CERTICICATE
 set status=
-for /f "tokens=1-2 delims=:; " %%a in ('"!temp.curl!" -k --silent --head https://rentry.co/') do (
+for /f "tokens=1-2 delims=:; " %%a in ('"!temp.curl!" -k --silent --head !BaseURL!/') do (
     if /i "%%a"=="Set-Cookie" (
         set cookie=--cookie "%%b"
         for /f "tokens=2 delims==" %%c in ("%%b") do (
