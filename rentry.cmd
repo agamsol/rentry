@@ -10,8 +10,13 @@ REM        Version 1.0.0.4
 REM   - Support new domain of rentry (rentry.org)
 REM   - Reduced code using a BaseURL variable
 REM   - New Entry Creation Format: [ URL={URL} ] [ EDIT_CODE={EDIT_CODE} ]
+REM        Version 1.0.0.5
+REM   - Fixed a bug where the length of the URL is not measured at all
+REM   [ Thanks to https://www.dostips.com, sowgtsoi, jeb and amel27
+REM         for the amazing work on the length counter function. ]
 
-set API=1.0.0.4
+
+set API=1.0.0.5
 set "BaseURL=https://rentry.org"
 
 set Args.Length=0
@@ -110,7 +115,9 @@ if "!temp.mode!"=="IF-EXIST" (
     )
 )
 
-if !temp.url.length! equ 1 echo ERROR: URL's length must be greater than or equal to 2 characters. & exit /b 1
+call :strLen temp.url temp.url.length
+if !temp.url.length! equ 1 echo ERROR: URL's length must be greater than or equal to 2 characters. [Length: !temp.url.length!] & exit /b 1
+if !temp.url.length! gtr 100 echo ERROR: URL's length cannot be longer than 100 characters [Length: !temp.url.length!] & exit /b 1
 
 if "!temp.mode!"=="NEW" (
     call :GENERATE_CERTICICATE
@@ -226,3 +233,18 @@ if exist "!ParseSource!" (
 chcp 65001>nul
 del /s /q "!ParseSource!" >nul 2>&1
 exit /b
+
+:strLen string len -- returns the length of a string
+(   SETLOCAL ENABLEDELAYEDEXPANSION
+    set "str=A!%~1!"&rem keep the A up front to ensure we get the length and not the upper bound
+                     rem it also avoids trouble in case of empty string
+    set "len=0"
+    for /L %%A in (12,-1,0) do (
+        set /a "len|=1<<%%A"
+        for %%B in (!len!) do if "!str:~%%B,1!"=="" set /a "len&=~1<<%%A"
+    )
+)
+( ENDLOCAL & REM RETURN VALUES
+    IF "%~2" NEQ "" SET /a %~2=%len%
+)
+EXIT /b

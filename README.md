@@ -8,7 +8,7 @@
 > Same purpose - based on different language.
 
 #### DEPENDENCIES
-> These depencies apply to rentry.cmd version 1.0.0.4
+> These depencies apply to rentry.cmd version 1.0.0.5
 - Powershell 3.0 ([according to microsoft docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertfrom-json?view=powershell-7.2#:~:text=See%20other%20examples%20below.,cmdlet%20supports%20JSON%20with%20comments.))
 - cURL Must be added to path.
 
@@ -81,8 +81,11 @@ Example for reading the chart:
     - use specified curl version to perform the raw command
 
 #### 📝 Change Log
+#### What has changed at version 1.0.0.5 (This Version)
+- Fixed a bug where the length of the URL is not measured at all
+##### [ Thanks to https://www.dostips.com, sowgtsoi, jeb and amel27 for the amazing work on the length counter function. ]
 
-#### What has changed at version 1.0.0.4 (This Version)
+#### What has changed at version 1.0.0.4
 - Support new domain of rentry (rentry.org)
 - Reduced code using a BaseURL variable
 - New Entry Creation Format: [ URL={URL} ] [ EDIT_CODE={EDIT_CODE} ]
